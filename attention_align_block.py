@@ -53,7 +53,8 @@ class Attention_Align_Block(nn.Module):
        corr = (q * k).sum(2)
 
        # mask for previous padd
-       mask = torch.ones(self.max_delay_blocks, self.max_delay_blocks, device=k.device)
+       min_t = min(corr.size(1), self.max_delay_blocks)
+       mask = torch.ones(min_t, self.max_delay_blocks, device=k.device)
        mask = torch.tril(mask).flip(dims=[-1])
        mask = mask.unsqueeze(0).repeat(corr.size(0), 1, 1)
        mask = torch.logical_not(mask)
